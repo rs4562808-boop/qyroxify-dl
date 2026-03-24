@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qyroxify DL</title>
+
+<style>
+body {
+  background: #0f0f0f;
+  color: white;
+  text-align: center;
+  font-family: Arial;
+  padding: 20px;
+}
+h1 {
+  color: cyan;
+}
+input {
+  width: 80%;
+  padding: 10px;
+  margin: 10px;
+}
+button {
+  padding: 10px 20px;
+  background: purple;
+  color: white;
+  border: none;
+}
+#result {
+  margin-top: 20px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>Qyroxify DL</h1>
+<p>Fast. Private. Powerful.</p>
+
+<input type="text" id="url" placeholder="Paste YouTube link here">
+<br>
+<button onclick="download()">Download</button>
+
+<div id="result"></div>
+
+<script>
+async function download() {
+  let url = document.getElementById("url").value;
+  let result = document.getElementById("result");
+
+  result.innerText = "Loading...";
+
+  try {
+    let res = await fetch("/download", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ url })
+    });
+
+    let data = await res.json();
+
+    if (data.error) {
+      result.innerText = data.error;
+    } else {
+      result.innerHTML = `
+        <h3>${data.title}</h3>
+        <video src="${data.video}" controls width="300"></video><br><br>
+        <a href="${data.video}" download>
+          <button>Download Video</button>
+        </a>
+      `;
+    }
+
+  } catch (e) {
+    result.innerText = "Server error";
+  }
+}
+</script>
+
+<p style="margin-top:40px; font-size:12px;">
+Download only public content. Respect privacy.
+</p>
+
+</body>
+</html>
